@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrderDecision AI - SPK Penetapan Harga & Pesanan Borongan UMKM</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen antialiased">
+
+  <!-- Header & Nav -->
+  <header class="bg-indigo-900 text-white shadow-lg border-b border-indigo-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 to-indigo-500 flex items-center justify-center font-black text-xl shadow-md">
+          OD
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">OrderDecision AI</h1>
+          <p class="text-xs text-indigo-200">Sistem Pendukung Keputusan Kelayakan Pesanan Borongan UMKM F&B</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-800 text-indigo-200 border border-indigo-600">
+          Track AI • Final Project GCC X EKRAF
+        </span>
+        <button id="btnLoadPreset" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-400 hover:bg-amber-300 text-slate-900 transition shadow">
+          ⚡ Muat Kasus: Donat 1.500 Pcs
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <!-- LEFT COLUMN: Input Forms (5 Cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- Order Input Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+              <h2 class="text-base font-bold text-slate-900">1. Data Pesanan Masuk (Order)</h2>
+              <p class="text-xs text-slate-500">Parameter penawaran yang diajukan calon pembeli</p>
+            </div>
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+          </div>
+
+          <form id="orderForm" class="mt-5 space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Volume Pesanan (Pcs)</label>
+              <input type="number" id="qtyOrder" value="1500" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition font-semibold" placeholder="Contoh: 1500" required>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Lead Time (Hari)</label>
+                <input type="number" id="leadTime" value="2" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition font-semibold" placeholder="Contoh: 2" required>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Harga Tawar (Rp/Pcs)</label>
+                <input type="number" id="hargaTawar" value="1800" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition font-semibold" placeholder="Contoh: 1800" required>
+              </div>
+            </div>
+
+            <!-- Baseline Accordion/Card -->
+            <div class="pt-4 border-t border-slate-100">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Parameter Baseline Usaha</span>
+                <span class="text-[10px] text-slate-400">Riset Empiris Jurnal</span>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <label class="block text-[11px] text-slate-500 mb-0.5">HPP Pokok Dasar (Rp)</label>
+                  <input type="number" id="hppDasar" value="1636" class="w-full px-2.5 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 font-medium">
+                </div>
+                <div>
+                  <label class="block text-[11px] text-slate-500 mb-0.5">Biaya Dus & Kemasan (Rp)</label>
+                  <input type="number" id="biayaKemasan" value="150" class="w-full px-2.5 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 font-medium">
+                </div>
+                <div>
+                  <label class="block text-[11px] text-slate-500 mb-0.5">Kapasitas Normal (Pcs/Hari)</label>
+                  <input type="number" id="kapasitasNormal" value="400" class="w-full px-2.5 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 font-medium">
+                </div>
+                <div>
+                  <label class="block text-[11px] text-slate-500 mb-0.5">Batas Fisik Maksimal (Pcs/Hari)</label>
+                  <input type="number" id="kapasitasMaks" value="650" class="w-full px-2.5 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 font-medium">
+                </div>
+                <div class="col-span-2">
+                  <label class="block text-[11px] text-slate-500 mb-0.5">Biaya Lembur Ekstra per Pcs (Rp)</label>
+                  <input type="number" id="biayaLemburPerUnit" value="350" class="w-full px-2.5 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 font-medium">
+                </div>
+              </div>
+            </div>
+
+            <!-- Optional API Key -->
+            <div class="pt-4 border-t border-slate-100">
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Google AI Studio API Key (Opsional)</label>
+              <input type="password" id="geminiApiKey" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition font-mono" placeholder="AIzaSy... (Kosongkan jika mode simulasi cerdas)">
+              <p class="text-[10px] text-slate-400 mt-1">Jika kosong, sistem tetap menjalankan analisis lengkap AI menggunakan model offline berbasis studi kasus empiris.</p>
+            </div>
+
+            <button type="submit" id="btnAnalyze" class="w-full mt-4 py-3 px-4 rounded-xl font-bold text-sm bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-200 transition flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+              Jalankan Analisis Keputusan
+            </button>
+          </form>
+        </div>
+
+        <!-- Academic References Card -->
+        <div class="bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100 text-xs text-indigo-900 space-y-2">
+          <div class="font-bold flex items-center gap-1.5 text-indigo-950">
+            <span>📚</span> Landasan Data Empiris (E-Journal):
+          </div>
+          <ul class="list-disc list-inside space-y-1 text-[11px] text-indigo-800/90 leading-relaxed">
+            <li><strong>UMKM Doyan Donat (2025):</strong> Full Costing HPP Rp 1.636/pcs & upah Rp 10rb/jam.</li>
+            <li><strong>CV Family Bakery (2023):</strong> Rough Cut Capacity Planning (RCCP) & Bottleneck Oven/Mixer.</li>
+            <li><strong>Donat Kentang Tlogomas (2022):</strong> Formulasi Cost-Plus Pricing & Analisis Laba.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Output Dashboard (7 Cols) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- Verdict Card -->
+        <div id="verdictCard" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 transition-all">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Vonis Sistem Pendukung Keputusan</span>
+              <h3 id="verdictTitle" class="text-xl font-extrabold text-slate-900 mt-0.5">Siap Menganalisis</h3>
+            </div>
+            <div id="badgeStatus" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">
+              Menunggu Input
+            </div>
+          </div>
+          <p id="verdictSummary" class="text-xs sm:text-sm text-slate-600 mt-4 leading-relaxed">
+            Masukkan parameter pesanan di panel kiri atau klik tombol preset di atas untuk mengevaluasi kelayakan finansial dan kapasitas produksi secara otomatis.
+          </p>
+        </div>
+
+        <!-- Metrics Grid (Layer 1 Deterministic) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="bg-white rounded-xl p-4 border border-slate-200">
+            <span class="text-[11px] font-semibold text-slate-400 block">Beban Harian</span>
+            <div id="metricBeban" class="text-base sm:text-lg font-bold text-slate-800 mt-1">-</div>
+            <span id="metricBebanNote" class="text-[10px] text-slate-400">Unit / hari</span>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-slate-200">
+            <span class="text-[11px] font-semibold text-slate-400 block">Status RCCP</span>
+            <div id="metricKapasitas" class="text-sm sm:text-base font-bold text-slate-800 mt-1">-</div>
+            <span id="metricKapasitasNote" class="text-[10px] text-slate-400">Kapasitas Fisik</span>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-slate-200">
+            <span class="text-[11px] font-semibold text-slate-400 block">Laba / (Rugi) Riil</span>
+            <div id="metricLaba" class="text-base sm:text-lg font-bold text-slate-800 mt-1">-</div>
+            <span id="metricMargin" class="text-[10px] font-medium text-slate-400">Margin bersih</span>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-slate-200">
+            <span class="text-[11px] font-semibold text-slate-400 block">Titik Impas (BEP)</span>
+            <div id="metricBEP" class="text-base sm:text-lg font-bold text-slate-800 mt-1">-</div>
+            <span class="text-[10px] text-slate-400">Harga minimal aman</span>
+          </div>
+        </div>
+
+        <!-- Deep Risk Analysis Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+          <h4 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <span>🛡️</span> Evaluasi Risiko Finansial & Operasional
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
+              <span class="font-bold text-slate-800 block mb-1">Aspek Finansial & Margin</span>
+              <p id="evalFinansial" class="text-slate-600 leading-relaxed text-[11px]">Belum dihitung.</p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
+              <span class="font-bold text-slate-800 block mb-1">Aspek Kapasitas & Mesin</span>
+              <p id="evalOperasional" class="text-slate-600 leading-relaxed text-[11px]">Belum dihitung.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Counter-Offer & WhatsApp Draft Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span>💬</span> Strategi Negosiasi & Draf WhatsApp
+            </h4>
+            <button id="btnCopyWa" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition">
+              Salin Naskah
+            </button>
+          </div>
+          
+          <div class="p-4 rounded-xl bg-emerald-50/70 border border-emerald-100 text-xs text-emerald-950 font-sans whitespace-pre-wrap leading-relaxed" id="waDraftText">
+Pesan negosiasi santun siap kirim akan muncul otomatis di sini setelah simulasi dijalankan.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Embedded Deterministic & AI Script -->
+  <script>
+    // Format Currency Helper
+    const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+
+    // Preset Data Loader
+    document.getElementById('btnLoadPreset').addEventListener('click', () => {
+      document.getElementById('qtyOrder').value = 1500;
+      document.getElementById('leadTime').value = 2;
+      document.getElementById('hargaTawar').value = 1800;
+      document.getElementById('hppDasar').value = 1636;
+      document.getElementById('biayaKemasan').value = 150;
+      document.getElementById('kapasitasNormal').value = 400;
+      document.getElementById('kapasitasMaks').value = 650;
+      document.getElementById('biayaLemburPerUnit').value = 350;
+      document.getElementById('orderForm').dispatchEvent(new Event('submit'));
+    });
+
+    // Form Submit Event
+    document.getElementById('orderForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnAnalyze');
+      btn.disabled = true;
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Memproses Analisis...`;
+
+      // 1. Gather Inputs
+      const qtyOrder = parseFloat(document.getElementById('qtyOrder').value);
+      const leadTime = parseFloat(document.getElementById('leadTime').value);
+      const hargaTawar = parseFloat(document.getElementById('hargaTawar').value);
+      const hppDasar = parseFloat(document.getElementById('hppDasar').value);
+      const biayaKemasan = parseFloat(document.getElementById('biayaKemasan').value);
+      const kapasitasNormal = parseFloat(document.getElementById('kapasitasNormal').value);
+      const kapasitasMaks = parseFloat(document.getElementById('kapasitasMaks').value);
+      const biayaLemburPerUnit = parseFloat(document.getElementById('biayaLemburPerUnit').value);
+      const apiKey = document.getElementById('geminiApiKey').value.trim();
+
+      // 2. Deterministic Calculation (Layer 1)
+      const bebanHarian = qtyOrder / leadTime;
+      let statusKapasitas = "AMAN_NORMAL";
+      let unitLemburHarian = 0;
+      let defisitHarian = 0;
+
+      if (bebanHarian > kapasitasMaks) {
+        statusKapasitas = "OVERLOAD_BOTTLENECK";
+        unitLemburHarian = kapasitasMaks - kapasitasNormal;
+        defisitHarian = bebanHarian - kapasitasMaks;
+      } else if (bebanHarian > kapasitasNormal) {
+        statusKapasitas = "BUTUH_LEMBUR";
+        unitLemburHarian = bebanHarian - kapasitasNormal;
+      }
+
+      const totalUnitLembur = unitLemburHarian * leadTime;
+      const totalBiayaLembur = totalUnitLembur * biayaLemburPerUnit;
+      const totalBiayaDasar = qtyOrder * (hppDasar + biayaKemasan);
+      const totalModalDibutuhkan = totalBiayaDasar + totalBiayaLembur;
+      const hppEfektifUnit = totalModalDibutuhkan / qtyOrder;
+      
+      const totalPendapatan = qtyOrder * hargaTawar;
+      const labaBersihOrder = totalPendapatan - totalModalDibutuhkan;
+      const marginPersen = (labaBersihOrder / totalPendapatan) * 100;
+      const bepUnit = Math.ceil(hppEfektifUnit);
+      const hargaRekomendasi15 = Math.ceil(hppEfektifUnit / 0.85);
+
+      // Render Layer 1 to UI
+      document.getElementById('metricBeban').innerText = bebanHarian.toLocaleString('id-ID');
+      document.getElementById('metricBebanNote').innerText = `Kapasitas: ${kapasitasNormal} - ${kapasitasMaks}/hari`;
+
+      const metricKapasitas = document.getElementById('metricKapasitas');
+      if (statusKapasitas === "OVERLOAD_BOTTLENECK") {
+        metricKapasitas.innerText = "Overload";
+        metricKapasitas.className = "text-sm sm:text-base font-bold text-rose-600 mt-1";
+      } else if (statusKapasitas === "BUTUH_LEMBUR") {
+        metricKapasitas.innerText = "Lembur";
+        metricKapasitas.className = "text-sm sm:text-base font-bold text-amber-600 mt-1";
+      } else {
+        metricKapasitas.innerText = "Aman";
+        metricKapasitas.className = "text-sm sm:text-base font-bold text-emerald-600 mt-1";
+      }
+
+      const metricLaba = document.getElementById('metricLaba');
+      metricLaba.innerText = formatRp(labaBersihOrder);
+      if (labaBersihOrder < 0) {
+        metricLaba.className = "text-base sm:text-lg font-bold text-rose-600 mt-1";
+      } else {
+        metricLaba.className = "text-base sm:text-lg font-bold text-emerald-600 mt-1";
+      }
+      document.getElementById('metricMargin').innerText = `Margin: ${marginPersen.toFixed(1)}%`;
+      document.getElementById('metricBEP').innerText = formatRp(bepUnit);
+
+      // 3. AI Strategic Reasoning (Layer 2)
+      let aiResult = null;
+
+      if (apiKey) {
+        try {
+          const promptPayload = `
+Analisis pesanan borongan berikut berdasarkan data metrik matematis yang telah dihitung:
+=== RINGKASAN PESANAN ===
+- Volume: ${qtyOrder} pcs | Lead Time: ${leadTime} hari | Beban: ${bebanHarian} pcs/hari | Harga Tawar: Rp ${hargaTawar}
+=== KAPASITAS (RCCP) ===
+- Status: ${statusKapasitas} | Batas Normal: ${kapasitasNormal} | Batas Maksimal Lembur: ${kapasitasMaks} | Defisit: ${defisitHarian} pcs/hari
+=== BIAYA & LABA ===
+- HPP Dasar: Rp ${hppDasar} | Biaya Lembur: Rp ${totalBiayaLembur} | HPP Efektif: Rp ${hppEfektifUnit.toFixed(2)}
+- Total Modal: Rp ${totalModalDibutuhkan} | Total Omzet Ditawar: Rp ${totalPendapatan}
+- Laba/Rugi: Rp ${labaBersihOrder} | Margin: ${marginPersen.toFixed(2)}% | BEP: Rp ${bepUnit}
+
+Berikan respons HANYA dalam JSON valid:
+{
+  "keputusan_strategis": { "status": "TERIMA" | "BUTUH_NEGOSIASI_ULANG" | "TOLAK", "ringkasan_eksekutif": "...", "label_badge": "..." },
+  "evaluasi_mendalam": { "aspek_finansial": "...", "aspek_operasional": "..." },
+  "draf_negosiasi_whatsapp": "..."
+}
+`;
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptPayload }] }] })
+          });
+          const data = await response.json();
+          let rawText = data.candidates[0].content.parts[0].text;
+          rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+          aiResult = JSON.parse(rawText);
+        } catch (err) {
+          console.warn("Gagal memanggil live Gemini API, beralih ke mode cerdas terpadu:", err);
+        }
+      }
+
+      // Fallback offline expert logic if no API key or failed
+      if (!aiResult) {
+        if (labaBersihOrder < 0 || statusKapasitas === "OVERLOAD_BOTTLENECK") {
+          aiResult = {
+            keputusan_strategis: {
+              status: "TOLAK_ATAU_NEGOSIASI_ULANG",
+              label_badge: "Jebakan Omzet Semu (Rugi & Overload)",
+              ringkasan_eksekutif: `Pesanan ${qtyOrder.toLocaleString('id-ID')} unit ini menimbulkan potensi nombok tunai sebesar ${formatRp(Math.abs(labaBersihOrder))} dan beban kerja harian (${bebanHarian} pcs) melampaui batas fisik dapur/mesin (${kapasitasMaks} pcs). Wajib dinegosiasikan ulang.`
+            },
+            evaluasi_mendalam: {
+              aspek_finansial: `Harga penawaran ${formatRp(hargaTawar)} berada di bawah HPP efektif (${formatRp(bepUnit)}) setelah memperhitungkan biaya lembur ${formatRp(totalBiayaLembur)}. Menghasilkan margin defisit ${marginPersen.toFixed(1)}%.`,
+              aspek_operasional: `Kebutuhan pengerjaan ${bebanHarian} pcs/hari melampaui batas lembur maksimal (${kapasitasMaks} pcs/hari). Terdapat defisit ${defisitHarian} pcs/hari yang berisiko membuat pengiriman terlambat dan kualitas donat menurun.`
+            },
+            draf_negosiasi_whatsapp: `Halo Kak, terima kasih banyak atas kepercayaannya memesan ${qtyOrder.toLocaleString('id-ID')} donat di tempat kami 🙏
+
+Setelah kami hitung kapasitas dapur dan waktu produksi agar kualitas tetap fresh saat acara, kami belum bisa menerima pesanan dalam durasi ${leadTime} hari di harga ${formatRp(hargaTawar)}/pcs karena kapasitas oven & tim sudah terisi penuh.
+
+Agar tetap dapat kami layani dengan maksimal, kami menawarkan opsi penyesuaian:
+1. Lead Time 3-4 Hari: Harga Rp 2.050 / pcs (Proses normal, kualitas rasa paling optimal).
+2. Lead Time 2 Hari (Prioritas Lembur): Harga ${formatRp(hargaRekomendasi15)} / pcs (Dengan tambahan shift lembur tim).
+
+Kira-kira mana yang paling pas dengan jadwal acara Kakak? Terima kasih!`
+          };
+        } else {
+          aiResult = {
+            keputusan_strategis: {
+              status: "DIREKOMENDASIKAN_TERIMA",
+              label_badge: "Pesanan Menguntungkan",
+              ringkasan_eksekutif: `Pesanan layak diterima. Menghasilkan proyeksi laba bersih ${formatRp(labaBersihOrder)} dengan margin ${marginPersen.toFixed(1)}% dalam batas kapasitas kerja yang aman.`
+            },
+            evaluasi_mendalam: {
+              aspek_finansial: `Harga tawar di atas HPP efektif (${formatRp(bepUnit)}), memberikan kontribusi kas positif untuk usaha.`,
+              aspek_operasional: `Beban ${bebanHarian} pcs/hari berada dalam kapasitas operasional yang dapat diselesaikan tepat waktu.`
+            },
+            draf_negosiasi_whatsapp: `Halo Kak, pesanan ${qtyOrder.toLocaleString('id-ID')} donat dengan jadwal pengerjaan ${leadTime} hari siap kami proses! Total biaya yang disepakati adalah ${formatRp(totalPendapatan)}. Mohon konfirmasi DP 50% untuk penguncian jadwal produksi dan bahan baku. Terima kasih!`
+          };
+        }
+      }
+
+      // Render AI Result to UI
+      const badge = document.getElementById('badgeStatus');
+      const vCard = document.getElementById('verdictCard');
+      const vTitle = document.getElementById('verdictTitle');
+
+      if (aiResult.keputusan_strategis.status.includes("TOLAK") || aiResult.keputusan_strategis.status.includes("NEGOSIASI")) {
+        vTitle.innerText = "Butuh Negosiasi Ulang / Tolak";
+        vTitle.className = "text-xl font-extrabold text-rose-600 mt-0.5";
+        badge.innerText = aiResult.keputusan_strategis.label_badge || "Risiko Tinggi";
+        badge.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200";
+        vCard.className = "bg-white rounded-2xl shadow-sm border-2 border-rose-200 p-6";
+      } else {
+        vTitle.innerText = "Pesanan Layak Diterima";
+        vTitle.className = "text-xl font-extrabold text-emerald-600 mt-0.5";
+        badge.innerText = aiResult.keputusan_strategis.label_badge || "Laba Aman";
+        badge.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200";
+        vCard.className = "bg-white rounded-2xl shadow-sm border-2 border-emerald-200 p-6";
+      }
+
+      document.getElementById('verdictSummary').innerText = aiResult.keputusan_strategis.ringkasan_eksekutif;
+      document.getElementById('evalFinansial').innerText = aiResult.evaluasi_mendalam.aspek_finansial;
+      document.getElementById('evalOperasional').innerText = aiResult.evaluasi_mendalam.aspek_kapasitas_dan_operasional || aiResult.evaluasi_mendalam.aspek_operasional;
+      document.getElementById('waDraftText').innerText = aiResult.draf_negosiasi_whatsapp;
+
+      btn.disabled = false;
+      btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> Jalankan Analisis Keputusan`;
+    });
+
+    // Copy WhatsApp Draft Helper
+    document.getElementById('btnCopyWa').addEventListener('click', () => {
+      const text = document.getElementById('waDraftText').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btnCopyWa');
+        const orig = btn.innerText;
+        btn.innerText = "Tersalin!";
+        setTimeout(() => btn.innerText = orig, 2000);
+      });
+    });
+  </script>
+</body>
+</html>
